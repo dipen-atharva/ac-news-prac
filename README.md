@@ -1,3 +1,0 @@
-# ac-news
-
-## Tech News 

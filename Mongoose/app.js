@@ -14,33 +14,48 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 const mongoose = require('mongoose');
-
+const { Schema } = mongoose;
 main().catch(err => console.log(err));
 
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/mongoose_prac');
-    const kittySchema = new mongoose.Schema({
-        name: String
-    });
+    await mongoose.connect('mongodb://localhost:27017/mongoose');
 
-    kittySchema.methods.speak = function speak() {
-        const greeting = this.name
-            ? "Meow name is " + this.name
-            : "I don't have a name";
-        console.log(greeting);
+    // const blogSchema = new Schema({
+    //     title: String, // String is shorthand for {type: String}
+    //     author: String,
+    //     body: String,
+    //     comments: [{ body: String, date: Date }],
+    //     date: { type: Date, default: Date.now },
+    //     hidden: Boolean,
+    //     meta: {
+    //         votes: Number,
+    //         favs: Number
+    //     }
+    // });
+
+    // const Blog = mongoose.model('Blog', blogSchema);
+
+    // const schema = new Schema({ _id: Number });
+    // schema.path('_id')
+
+    // const Model = mongoose.model('Test',schema);
+
+    // const doc = new Model();
+    // doc._id = 1;
+    // doc._id instanceof mongoose.Types.ObjectId;
+    // await doc.save();
+
+    const animalSchema = new Schema({ name: String, type: String })
+    animalSchema.methods.findSimilarTypes = function (cb) {
+        return mongoose.model('Animal').find({ type: this.type }, cb);
     };
 
-    const Kitten = mongoose.model('Kitten', kittySchema);
-    const fluffy = new Kitten({ name: 'fluffy' });
-    fluffy.speak();
-    await fluffy.save();
-
-    const silence = new Kitten({ name: 'Silence' });
-    silence.speak();
-    await silence.save();
-    console.log(silence.name);
-    const kittens = await Kitten.find();
-    console.log(kittens);
+    const Animal = mongoose.model('Animal', animalSchema);
+    const dog = new Animal({ type: 'dog' });
+    dog.findSimilarTypes((err, dogs) => {
+        console.log(dogs); // woof
+    });
+    // await dog.save();
 
 }
 
