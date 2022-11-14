@@ -15,22 +15,35 @@ async function main() {
             fullname: {
                 get() {
                     return this.name.first + " " + this.name.last;
+                },
+                set(v) {
+                    this.name.first = v.substr(0, v.indexOf(' '));
+                    this.name.last = v.substr(v.indexOf(' ') + 1);
                 }
             }
         }
     });
 
-    const Person = mongoose.model('Persom', fullnameSchema);
+    const Person = mongoose.model('Person', fullnameSchema);
     const data = new Person({
         name: {
             first: "Dipen",
             last: "Patel"
         }
     })
-    await data.save();
 
-    fullnameSchema.virtual('fullName').get(function () {
-        return this.name.first + ' ' + this.name.last;
-    });
-    console.log(data.fullname);
+    fullnameSchema.virtual('fullName').
+        get(function () {
+            return this.name.first + ' ' + this.name.last;
+        }).
+        set(function (v) {
+            this.name.first = v.substr(0, v.indexOf(' '));
+            this.name.last = v.substr(v.indexOf(' ') + 1);
+        })
+    const data2 = new Person({
+        fullName: 'William Rose'
+    })
+    console.log(data2.name.first);
+
+
 }

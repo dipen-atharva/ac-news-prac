@@ -18,45 +18,27 @@ const { Schema } = mongoose;
 main().catch(err => console.log(err));
 
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/mongoose');
+  await mongoose.connect('mongodb://localhost:27017/mongoose');
 
-    // const blogSchema = new Schema({
-    //     title: String, // String is shorthand for {type: String}
-    //     author: String,
-    //     body: String,
-    //     comments: [{ body: String, date: Date }],
-    //     date: { type: Date, default: Date.now },
-    //     hidden: Boolean,
-    //     meta: {
-    //         votes: Number,
-    //         favs: Number
-    //     }
-    // });
+  // const numberSchema = new Schema({
+  //   integerOnly: {
+  //     type : Number,
+  //     get: v => Math.round(v),
+  //     set: v => Math.round(v),
+  //     alias: 'i'
+  //   }
+  // });
 
-    // const Blog = mongoose.model('Blog', blogSchema);
+  // const Number1 = mongoose.model('Number',numberSchema);
+  // const doc = new Number1;
+  // doc.integerOnly = 2.001 ;
+  // console.log(doc.i)
+  const schema1 = new Schema({ name: String });
+  const schema2 = new Schema({ name: 'String' });
 
-    // const schema = new Schema({ _id: Number });
-    // schema.path('_id')
-
-    // const Model = mongoose.model('Test',schema);
-
-    // const doc = new Model();
-    // doc._id = 1;
-    // doc._id instanceof mongoose.Types.ObjectId;
-    // await doc.save();
-
-    const animalSchema = new Schema({ name: String, type: String })
-    animalSchema.methods.findSimilarTypes = function (cb) {
-        return mongoose.model('Animal').find({ type: this.type }, cb);
-    };
-
-    const Animal = mongoose.model('Animal', animalSchema);
-    const dog = new Animal({ type: 'dog' });
-    dog.findSimilarTypes((err, dogs) => {
-        console.log(dogs); // woof
-    });
-    // await dog.save();
-
+  const Person = mongoose.model('Person', schema2);
+  const doc = new Person({ name: 42 });
+  doc.save();
 }
 
 module.exports = app;
