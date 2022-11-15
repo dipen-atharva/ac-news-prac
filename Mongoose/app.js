@@ -20,25 +20,36 @@ main().catch(err => console.log(err));
 async function main() {
   await mongoose.connect('mongodb://localhost:27017/mongoose');
 
-  // const numberSchema = new Schema({
-  //   integerOnly: {
-  //     type : Number,
-  //     get: v => Math.round(v),
-  //     set: v => Math.round(v),
-  //     alias: 'i'
-  //   }
-  // });
+  const userSchema = new Schema({
+    name: String,
+    email: String,
+    roles: [String]
+  }, { autoCreate: false, autoIndex: false });
 
-  // const Number1 = mongoose.model('Number',numberSchema);
-  // const doc = new Number1;
-  // doc.integerOnly = 2.001 ;
-  // console.log(doc.i)
-  const schema1 = new Schema({ name: String });
-  const schema2 = new Schema({ name: 'String' });
+  const User = mongoose.model('User', userSchema);
+  const RedactedUser = mongoose.model('RedactedUser', userSchema);
 
-  const Person = mongoose.model('Person', schema2);
-  const doc = new Person({ name: 42 });
-  doc.save();
+  await User.createCollection();
+  await RedactedUser.createCollection({
+    viewOn: 'users',
+    pipeline: [
+      {
+        $set: {
+          name: { $concat: [{ $substr: ['$name', 0, 3] }, '...'] },
+          email: { $concat: [{ $substr: ['$email', 0, 3] }, '...'] }
+        }
+      }
+    ]
+  });
+
+  await User.create([
+    { name: 'John Smith', email: 'john.smith@gmail.com', roles: ['user'] },
+    { name: 'Bill James', email: 'bill@acme.co', roles: ['admin'] }
+  ]);
+
+  console.log(await RedactedUser.find({ roles: 'user' }));
+
+
 }
 
 module.exports = app;
