@@ -18,12 +18,7 @@ async function main() {
   })
   const Character = mongoose.model('Character', characterSchema)
 
-  const ryu = await Character.findOne({ name: 'Ryu' })
-  ryu.specials.push({
-    name: 'Jodan Sokutou Geri123',
-    keys: 'â†“ â†˜ â†’ K'
-  })
-
-  await ryu.save()
+  const ryu = await Character.findOne({ name: 'Ryu' }).lean()
+  console.log(ryu.length);
 
 }
